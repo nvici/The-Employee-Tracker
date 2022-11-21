@@ -30,6 +30,8 @@ const emplTracker = () => {
                 'View Department Budget',
                 'Quit'
                 ],
+      // choices: [{ name: 'View all Employees'}, {name: 'View some employees'}],
+              
         loop: false,
     },
   ])
