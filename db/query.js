@@ -6,7 +6,7 @@ const db = require('./connection');
       }
   
 
-  addDept(data) {
+  createDepts(data) {
       const values = [data.name];
       return this.db
       .promise()
@@ -16,7 +16,7 @@ const db = require('./connection');
       );
   }
 
-  addRole(data) {
+  createRoles(data) {
       const values = [data.department_id, data.title, data.salary];
       return this.db
       .promise()
@@ -28,7 +28,7 @@ const db = require('./connection');
       );
   }
 
-  addEmp(data) {
+  addEmployee(data) {
       const values = [data.role_id, data.first, data.last, data.manager_id];
       return this.db
       .promise()
@@ -40,7 +40,7 @@ const db = require('./connection');
       );
   }
 
-  deleteEmp(data) {
+  deleteEmployees(data) {
       const values = [data.emp_id];
       return this.db
       .promise()
@@ -51,7 +51,7 @@ const db = require('./connection');
       );
   }
 
-  updateEmpRoleById(data) {
+  remakeEmployeeRoleById(data) {
       const values = [data.role_id, data.emp_id];
     return this.db
     .promise()
@@ -63,7 +63,7 @@ const db = require('./connection');
     );
   }
 
-  updateEmpManagerById(data) {
+  remakeEmployeeManagerById(data) {
       const values = [data.manager_id, data.emp_id];
       return this.db
       .promise()
@@ -84,7 +84,7 @@ const db = require('./connection');
       );
   }
 
-  getEmpByDeptId(data) {
+  getEmployeeByDeptartmentId(data) {
       const values = [data.department_id]
       return this.db
       .promise()
@@ -102,7 +102,7 @@ const db = require('./connection');
       );
   }
 
-  getEmpByMgrId(data) {
+  getEmployeesByManagerId(data) {
       const values = [data.manager_id];
       return this.db
       .promise()
@@ -117,7 +117,7 @@ const db = require('./connection');
       )
   }
 
-  getBudgetByDept() {
+  getBudgetByDepartment() {
       return this.db
       .promise()
       .query(

@@ -1,15 +1,10 @@
 const inquirer = require('inquirer');
-//const fs = require('fs');
 const selectHelper = require('./lib/selection');
 
 const db = require('./db/query');
 const cTable = require('console.table');
 
-
-// const PORT = process.env.PORT || 3001;
-// const app = express();
-
-const emplTracker = () => {
+const trackEmployees = () => {
   inquirer
   .prompt([
     {
@@ -29,9 +24,7 @@ const emplTracker = () => {
                 'Add a Department',
                 'View Department Budget',
                 'Quit'
-                ],
-      // choices: [{ name: 'View all Employees'}, {name: 'View some employees'}],
-              
+                ],              
         loop: false,
     },
   ])
@@ -42,31 +35,31 @@ const emplTracker = () => {
 
     switch (request){
       case 'View All Employees':
-        viewEmps();
+        viewEmployees();
         break;
       
       case 'Add an Employee':
-        newEmp();
+        createEmply();
         break;
 
       case 'Update Employee Role':
-        updateEmpRole();
+        remakeEmployeeRole();
         break;
 
       case 'Update Employees Manager':
-        updateEmpManager();
+        remakeEmployeeManager();
         break;
 
       case 'View Employees by Department':
-        viewEmpByDept();
+        viewEmployeesByDeptarment();
         break;
 
       case 'View Employees by Manager':
-        viewEmpByMgr();
+        viewEmployeeByManager();
         break;
 
       case 'Delete an Employee':
-        delEmp();
+        deleteEmployee();
         break;
 
       case 'View All Roles':
@@ -74,15 +67,15 @@ const emplTracker = () => {
         break;
 
       case 'Add a Role':
-        newRole();
+        createRole();
         break;
 
       case 'View All Departments':
-        viewDepts();
+        viewDepartments();
         break;
 
       case 'Add a Department':
-        newDept();
+        createDept();
         break;
        
       case 'View Department Budget':
@@ -96,8 +89,8 @@ const emplTracker = () => {
   })
 };
 
-
-const newDept = async () => {
+//creates a new Dept
+const createDept = async () => {
 
   const department = await inquirer.prompt([
     {
@@ -115,12 +108,12 @@ const newDept = async () => {
     }
   ]);
 
-  await db.addDept(department);
+  await db.createDepts(department);
 
-  emplTracker();
+  trackEmployees();
 }
-
-const newEmp = async() => {
+//creates Employee
+const createEmply = async() => {
 
   const roleArr = await selectHelper.roleChoices();
 
@@ -130,12 +123,12 @@ const newEmp = async() => {
     {
       type: "input",
       name: "first",
-      message: "What is the Employees First Name?",
+      message:  "First Name?",
       validate: (first) => {
         if (first && isNaN(first)) {
           return true;
         } else {
-          console.log ("Please enter the first name!");
+          console.log ("Please enter a name!");
           return false;
         }
       }
@@ -143,12 +136,12 @@ const newEmp = async() => {
     {
       type: "input",
       name: "last",
-      message: "What is the Employees Last Name?",
+      message: "Last Name?",
       validate: (last) => {
         if (last && isNaN(last)){
           return true;
         } else {
-          console.log ("Please enter the last name!");
+          console.log ("Please enter a last name!");
           return false;
         }
       }
@@ -156,28 +149,28 @@ const newEmp = async() => {
     {
       type: "input",
       name: "role_id",
-      message: "What is the employee role?",
+      message: "Employee's role?",
       choices: roleArr,
       loop: false,
     },
     {
       type: "list",
       name: "manager_id",
-      message: "Who is the employees manager?",
+      message: "Employee's manager?",
       choices: mgmtArr,
       loop: false,
     }
   ]);
 
-  await db.addEmp(emp);
+  await db.addEmployee(emp);
 
-  emplTracker();
+  trackEmployees();
 
 }
 
 
-
-const newRole = async () => {
+//creates Role for employee
+const createRole = async () => {
 
   const choicesArr = await selectHelper.deptChoices();
 
@@ -185,12 +178,12 @@ const newRole = async () => {
     {
       type: "input",
       name: "title",
-      message: "What is the name of the role?",
+      message: "Employee's role?",
       validate: (title) => {
         if (title) {
           return true;
         } else {
-          console.log("Please enter a role name!");
+          console.log("Please enter the employee's role!");
           return false;
         }
       }
@@ -198,7 +191,7 @@ const newRole = async () => {
     {
       type: "input",
       name: "salary",
-      message: "What is the salary?",
+      message: "salary?",
       validate: (salary) => {
         if(salary && !isNaN(salary)){
           return true;
@@ -217,13 +210,14 @@ const newRole = async () => {
     }
   ]);
 
-  await db.addRole(role);
+  await db.createRoles(role);
 
-  emplTracker();
+  trackEmployees();
 
 }
 
-const delEmp = async () => {
+//deletes an Employee
+const deleteEmployee = async () => {
   const empArr = await selectHelper.NonMgmtChoices();
 
   const emp = await inquirer.prompt([
@@ -236,28 +230,22 @@ const delEmp = async () => {
     }
    ]);
 
-  await db.deleteEmp(emp);
+  await db.deleteEmployees(emp);
 
-  emplTracker();
+  trackEmployees();
 
 }
 
-const updateEmpRole = async () => {
+//update the Employee
+const remakeEmployeeRole = async () => {
 
   const roleArr = await selectHelper.roleChoices();
   const empArr = await selectHelper.empChoices();
-  // const emps = await db.getEmps();
-  // console.log(emps);
-  // const employees1 = emps.map(emp => { 
-  //   return {
-  //   value: emp.id,
-  //   name: emp.first_name + " " + emp.last_name,
-  // }})
   const emp = await inquirer.prompt([
     {
       type: "list",
       name: "emp_id",
-      message: "Please enter the id of the employee that you want to update.",
+      message: "Enter employee's id that you want to update.",
       choices: empArr,
       loop: false,
     },
@@ -270,13 +258,14 @@ const updateEmpRole = async () => {
     }
   ]);
 
-  await db.updateEmpRoleById(emp);
+  await db.remakeEmployeeRoleById(emp);
 
-  emplTracker();
+ trackEmployees();
 
 }
 
-const updateEmpManager = async () => {
+//update employee's manager
+const remakeEmployeeManager = async () => {
 
   const empArr = await selectHelper.NonMgmtChoices();
   const mgmtArr = await selectHelper.mgmtChoices();
@@ -285,27 +274,27 @@ const updateEmpManager = async () => {
     {
       type: "list",
       name: "emp_id",
-      message: "Please enter the name of the employee that you would like to update.",
+      message: "Enter employee's name that you would like to update.",
       choices: empArr,
       loop: false,
     },
     {
       type: "list",
       name: "manager_id",
-      message: "Who is the employees manager?",
+      message: "Employees manager?",
       choices: mgmtArr,
       loop: false,
     }
   ]);
 
-  await db.updateEmpManagerById(emp);
+  await db.remakeEmployeeManagerById(emp);
 
-  emplTracker();
+  trackEmployees();
 
 }
 
-
-const viewDepts = () => {
+//view list of Depts
+const viewDepartments = () => {
   db.getDepts()
 
   .then(([rows]) => {
@@ -314,12 +303,12 @@ const viewDepts = () => {
   })
 
   .then(() => {
-    emplTracker();
+    trackEmployees();
   })
     
 }
 
-//Get all rows
+//Get all roles available
 const viewRoles = () => {
   db.getRoles()
 
@@ -329,12 +318,12 @@ const viewRoles = () => {
   })
 
   .then(() => {
-    emplTracker();
+    trackEmployees();
   })
 }
 
 //Get all employees
-const viewEmps = () => {
+const viewEmployees = () => {
   db.getEmps()
 
   .then(([rows]) => {
@@ -343,13 +332,13 @@ const viewEmps = () => {
   })
 
   .then(() => {
-    emplTracker();
+    trackEmployees();
   })
 }
 
-//Get all departments and their budget
+//Show budgets by department
 const viewBudgets = async () => {
-  db.getBudgetByDept()
+  db.getBudgetByDepartment()
 
   .then(([rows]) => {
     console.log('\n');
@@ -357,12 +346,12 @@ const viewBudgets = async () => {
   })
 
   .then(() => {
-    emplTracker();
+    trackEmployees();
   })
 }
 
-//Get all employees in a specific department
-const viewEmpByDept = async () => {
+//employees shown by department
+const viewEmployeesByDeptarment = async () => {
 
 const deptArr = await selectHelper.deptChoices();
 
@@ -370,47 +359,47 @@ inquirer.prompt([
   {
     type: "list",
     name: "dept_id",
-    message: "Please specify the department that you would like to view the employees for.",
+    message: "Which department is the employee located?",
     choices: deptArr,
     loop: false
   }
 ])
 
 .then((data) => {
-  db.getEmpByDeptId(data)
+  db.getEmployeeByDepartmentId(data)
 
   .then(([rows]) => {
     console.log('\n');
     console.log(cTable.getTable(rows))
-    emplTracker();
+    trackEmployees();
   })
 })
 
 }
-
-const viewEmpByMgr = async () => {
+// view employees by which manager they work for
+const viewEmployeeByManager = async () => {
   const mgmtArr = await selectHelper.mgmtChoices();
 
   inquirer.prompt([
     {
       type: "list",
       name: "manager_id",
-      message: "Please enter the manager you want to view the employees for.",
+      message: "Which manager is the employee located?",
       choices: mgmtArr,
       loop: false
     }
   ])
 
   .then((data) => {
-    db.getEmpByMgrId(data)
+    db.getEmployeesByManagerId(data)
     .then(([rows]) => {
       console.log('\n');
       console.log(cTable.getTable(rows));
-      emplTracker();
+      trackEmployees();
     })
   })
 
 }
 
 
-emplTracker();
+trackEmployees();
